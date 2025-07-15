@@ -19,6 +19,15 @@ const Dash = lazy(() =>
     })
 );
 
+const ViewDetails = lazy(() =>
+  import('./components/UserDashBoard/ViewDetails')
+    .then((module) => ({ default: module.default })) 
+    .catch(error => {
+      console.error("Error Loading the User DashBoard:", error);
+      return { default: () => <div>Error Loading the view details try again</div> };
+    })
+);
+
 
 
 // Add any other routes you need
@@ -41,6 +50,15 @@ const routes = [
     meta:{
       name:"UserDashBoard",
       icon:"Dash",
+      RequireAuth:false,
+    }
+  },
+  {
+    path: '/:id/dashboard/view-details/:id',
+    element: <ViewDetails/>,
+    meta:{
+      name:"ViewDetails",
+      icon:"user",
       RequireAuth:false,
     }
   },

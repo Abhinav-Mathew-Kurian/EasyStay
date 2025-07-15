@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import DemoListing from './demolisting';
 import { Save, Hotel, Star, StarHalf } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 const ViewRooms = () => {
+  const navigate=useNavigate()
   const [listing, setListing] = useState([]);
+
+
+  const handleViewMore=(roomId)=>{
+    navigate(`/2/dashboard/view-details/${roomId}`)
+  }
 
   const getStars = (rating, count) => {
     const fullStars = Math.floor(rating);
@@ -77,15 +84,43 @@ const ViewRooms = () => {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-[#1E1E2F]/70 to-[#1E1E2F]/50 border-2 border-[#00C49A] p-2 md:p-3 rounded-lg flex items-center justify-center md:justify-start">
+                <div
+                  onClick={() => console.log('Save clicked')}
+                  className="
+                                  bg-gradient-to-r from-[#1E1E2F]/70 to-[#1E1E2F]/50
+                                  border-2 border-[#00C49A]
+                                  p-2 md:p-3
+                                  rounded-lg
+                                  flex items-center justify-center md:justify-start
+                                  cursor-pointer
+                                  hover:bg-[#1E1E2F]/80
+                                  hover:scale-[1.02]
+                                  transition-transform duration-200
+                                "
+                >
                   <Save className="text-[#00C49A] mr-2" size={18} />
                   <span className="text-[#FAFAFA] text-sm">Save</span>
                 </div>
 
-                <div className="bg-gradient-to-r from-[#1E1E2F]/70 to-[#1E1E2F]/50 border-2 border-[#00C49A] p-2 md:p-3 rounded-lg flex items-center justify-center md:justify-start">
+
+                <div
+                  className="
+                          bg-gradient-to-r from-[#1E1E2F]/70 to-[#1E1E2F]/50
+                          border-2 border-[#00C49A]
+                          p-2 md:p-3
+                          rounded-lg
+                          flex items-center justify-center md:justify-start
+                          cursor-pointer
+                          hover:bg-[#1E1E2F]/80
+                          hover:scale-[1.02]
+                          transition-transform duration-200
+                        "
+                        onClick={()=>handleViewMore(list.id)}
+                >
                   <Hotel className="text-[#00C49A] mr-2" size={18} />
-                  <span className="text-[#FAFAFA] text-sm">View More Details</span>
+                  <span className="text-[#FAFAFA] text-sm">View More</span>
                 </div>
+
               </div>
 
             </div>
