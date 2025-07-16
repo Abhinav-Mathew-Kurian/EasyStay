@@ -54,7 +54,7 @@ const routes = [
     }
   },
   {
-    path: '/:id/dashboard/view-details/:id',
+    path: '/:id/dashboard/view-details/:roomId',
     element: <ViewDetails/>,
     meta:{
       name:"ViewDetails",
