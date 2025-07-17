@@ -28,6 +28,15 @@ const ViewDetails = lazy(() =>
     })
 );
 
+const ListRooms = lazy(() =>
+  import('./components/UserDashBoard/ListRooms')
+    .then((module) => ({ default: module.default })) 
+    .catch(error => {
+      console.error("Error Loading the User DashBoard:", error);
+      return { default: () => <div>Error Loading the view details try again</div> };
+    })
+);
+
 
 
 // Add any other routes you need
@@ -62,7 +71,16 @@ const routes = [
       RequireAuth:false,
     }
   },
-  
+  {
+    path: '/:id/dashboard/listrooms',
+    element: <ListRooms/>,
+    meta:{
+      name:"ListRooms",
+      icon:"user",
+      RequireAuth:false,
+    }
+  }
+  ,
   {
     path: '*',
     element: <PageNotFound/>,

@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Menu, X, User, Plus, MessageSquare, Settings, Heart } from "lucide-react";
 import EasyStayLogo from "../../assets/Logo.png";
 
 const AppBar = () => {
+  const {id}= useParams();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false); // State for logout dropdown
   const navigate = useNavigate(); // For navigation
@@ -63,14 +64,14 @@ const AppBar = () => {
           {/* Center elements */}
           <div className="hidden md:flex items-center gap-6">
             <button
-              onClick={() => navigate('/add-rooms')}
+              onClick={() => navigate(`/${id}/dashboard/listrooms`)}
               className="text-[#FAFAFA] hover:text-[#00C49A] flex items-center px-3 py-2 rounded transition-colors duration-200"
               title="Add Room"
             >
               <Plus size={20} /> <span>List Rooms</span>
             </button>
             <button
-              onClick={() => navigate('/manage-listings')}
+              onClick={() => navigate(`/${id}/dashboard/listrooms`)}
               className="text-[#FAFAFA] hover:text-[#00C49A] px-4 py-2 rounded transition-colors duration-200"
             >
               Manage Listings
@@ -153,7 +154,7 @@ const AppBar = () => {
             <li className="py-2">
               <button 
                 onClick={() => {
-                  navigate('/add-rooms');
+                  navigate(`/${id}/dashboard/listrooms`);
                   setIsMobileMenuOpen(false);
                 }}
                 className="w-full text-left text-[#FAFAFA] font-medium py-2 px-3 hover:bg-[#2D2D2D]/30 hover:text-[#00C49A] rounded flex items-center transition duration-300"

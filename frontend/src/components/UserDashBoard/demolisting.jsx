@@ -1,15 +1,18 @@
-const DemoListing =[
+const DemoListing = [
   {
     "id": "EST001",
     "title": "Cozy PG for Ladies near Technopark",
     "slug": "pg-for-ladies-near-technopark",
     "type": "PG",
+    "description": "A comfortable and secure paying guest accommodation exclusively for ladies, conveniently located near Technopark, offering modern amenities for a pleasant stay.",
     "location": {
       "city": "Thiruvananthapuram",
       "area": "Kazhakkoottam",
       "latitude": 8.5566,
       "longitude": 76.8752
     },
+    "state": "Kerala",
+    "pincode": "695582",
     "occupancy": {
       "allowed": [
         "Ladies only"
@@ -53,12 +56,15 @@ const DemoListing =[
     "title": "2 BHK Flat for Families in Sreekariyam",
     "slug": "2bhk-flat-families-sreekariyam",
     "type": "2BHK",
+    "description": "Spacious 2 BHK flat ideal for families, situated in the peaceful locality of Sreekariyam, offering a comfortable living environment with essential amenities.",
     "location": {
       "city": "Thiruvananthapuram",
       "area": "Sreekariyam",
       "latitude": 8.5412,
       "longitude": 76.8824
     },
+    "state": "Kerala",
+    "pincode": "695017",
     "occupancy": {
       "allowed": [
         "Married Couples",
@@ -101,12 +107,15 @@ const DemoListing =[
     "title": "Shared Room for Bachelors near Palayam",
     "slug": "shared-room-bachelors-palayam",
     "type": "Shared",
+    "description": "Affordable shared room for bachelors, located conveniently near Palayam, perfect for students or working professionals seeking a budget-friendly option.",
     "location": {
       "city": "Thiruvananthapuram",
       "area": "Palayam",
       "latitude": 8.5091,
       "longitude": 76.9581
     },
+    "state": "Kerala",
+    "pincode": "695034",
     "occupancy": {
       "allowed": [
         "Bachelors only"
@@ -149,12 +158,15 @@ const DemoListing =[
     "title": "Ladies Hostel Room near Pattom",
     "slug": "ladies-hostel-room-pattom",
     "type": "Hostel",
+    "description": "Secure and well-maintained hostel room for ladies, situated near Pattom, offering a safe and comfortable environment with essential amenities for students and professionals.",
     "location": {
       "city": "Thiruvananthapuram",
       "area": "Pattom",
       "latitude": 8.5261,
       "longitude": 76.9357
     },
+    "state": "Kerala",
+    "pincode": "695004",
     "occupancy": {
       "allowed": [
         "Ladies only"
@@ -197,12 +209,15 @@ const DemoListing =[
     "title": "Compact Studio near Vellayambalam",
     "slug": "studio-vellayambalam",
     "type": "Studio",
+    "description": "A compact and modern studio apartment located near Vellayambalam, perfect for working professionals seeking a private and convenient living space.",
     "location": {
       "city": "Thiruvananthapuram",
       "area": "Vellayambalam",
       "latitude": 8.5162,
       "longitude": 76.956
     },
+    "state": "Kerala",
+    "pincode": "695010",
     "occupancy": {
       "allowed": [
         "Working Professionals"
@@ -244,12 +259,15 @@ const DemoListing =[
     "title": "Single Room for Student in Peroorkada",
     "slug": "single-room-student-peroorkada",
     "type": "Room",
+    "description": "A cozy single room ideal for students, located in Peroorkada, providing a quiet and conducive environment for study and rest.",
     "location": {
       "city": "Thiruvananthapuram",
       "area": "Peroorkada",
       "latitude": 8.5305,
       "longitude": 76.974
     },
+    "state": "Kerala",
+    "pincode": "695005",
     "occupancy": {
       "allowed": [
         "Students only"
@@ -291,12 +309,15 @@ const DemoListing =[
     "title": "Luxury 3 BHK Flat in Kowdiar",
     "slug": "luxury-3bhk-kowdiar",
     "type": "3BHK",
+    "description": "An opulent 3 BHK flat in the prime locality of Kowdiar, offering luxurious living with high-end amenities, perfect for discerning families.",
     "location": {
       "city": "Thiruvananthapuram",
       "area": "Kowdiar",
       "latitude": 8.5109,
       "longitude": 76.9586
     },
+    "state": "Kerala",
+    "pincode": "695003",
     "occupancy": {
       "allowed": [
         "Families only"
@@ -340,12 +361,15 @@ const DemoListing =[
     "title": "Budget PG for Working Men in Ulloor",
     "slug": "budget-pg-working-men-ulloor",
     "type": "PG",
+    "description": "An economical paying guest accommodation for working men in Ulloor, providing essential facilities for a comfortable and affordable stay.",
     "location": {
       "city": "Thiruvananthapuram",
       "area": "Ulloor",
       "latitude": 8.5427,
       "longitude": 76.8843
     },
+    "state": "Kerala",
+    "pincode": "695011",
     "occupancy": {
       "allowed": [
         "Working Men only"
@@ -388,12 +412,15 @@ const DemoListing =[
     "title": "Furnished Room in Medical College Area",
     "slug": "furnished-room-medical-college",
     "type": "Room",
+    "description": "A fully furnished room situated in the Medical College area, ideal for students and interns seeking a convenient and comfortable living space.",
     "location": {
       "city": "Thiruvananthapuram",
       "area": "Medical College",
       "latitude": 8.5322,
       "longitude": 76.8944
     },
+    "state": "Kerala",
+    "pincode": "695011",
     "occupancy": {
       "allowed": [
         "Students",
@@ -436,12 +463,15 @@ const DemoListing =[
     "title": "1 BHK for IT Professionals near Technopark",
     "slug": "1bhk-it-professionals-technopark",
     "type": "1BHK",
+    "description": "A modern 1 BHK apartment specifically designed for IT professionals, located conveniently near Technopark, offering a comfortable and productive living environment.",
     "location": {
       "city": "Thiruvananthapuram",
       "area": "Kazhakkoottam",
       "latitude": 8.5566,
       "longitude": 76.8752
     },
+    "state": "Kerala",
+    "pincode": "695582",
     "occupancy": {
       "allowed": [
         "IT Professionals only"
@@ -478,6 +508,6 @@ const DemoListing =[
     "created_at": "2025-05-17T10:30:00Z",
     "updated_at": "2025-05-17T10:30:00Z"
   }
-]
+];
 
 export default DemoListing;
