@@ -1,5 +1,9 @@
 import { lazy } from "react";
 import PageNotFound from "./components/PageNotFound";
+import ManageListing from "./components/UserDashBoard/ManageListing";
+import Profile from "./components/UserDashBoard/Profile";
+import Login from "./components/HomePage/Login";
+import Register from "./components/HomePage/Register";
 
 const Home = lazy(() =>
   import('./pages/HomePage')
@@ -76,6 +80,45 @@ const routes = [
     element: <ListRooms/>,
     meta:{
       name:"ListRooms",
+      icon:"user",
+      RequireAuth:false,
+    }
+  },
+  {
+    path: '/:id/dashboard/manage-listings',
+    element: <ManageListing/>,
+    meta:{
+      name:"ManageListing",
+      icon:"user",
+      RequireAuth:false,
+    }
+  }
+  ,
+  {
+    path: '/:id/dashboard/profile',
+    element: <Profile/>,
+    meta:{
+      name:"Profile",
+      icon:"user",
+      RequireAuth:false,
+    }
+  }
+  ,
+  {
+    path: '/login',
+    element: <Login/>,
+    meta:{
+      name:"Profile",
+      icon:"user",
+      RequireAuth:false,
+    }
+  }
+  ,
+  {
+    path: '/register',
+    element: <Register/>,
+    meta:{
+      name:"Profile",
       icon:"user",
       RequireAuth:false,
     }
