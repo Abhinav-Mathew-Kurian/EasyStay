@@ -1,2 +1,2 @@
 Will update soon
-Buiding Frontend--50% done
+Buiding Frontend--80% done
