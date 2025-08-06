@@ -4,6 +4,9 @@ import ManageListing from "./components/UserDashBoard/ManageListing";
 import Profile from "./components/UserDashBoard/Profile";
 import Login from "./components/HomePage/Login";
 import Register from "./components/HomePage/Register";
+import Saved from "./components/UserDashBoard/Saved";
+import Messages from "./components/UserDashBoard/Messages";
+import MssgCont from "./components/UserDashBoard/MssgCont";
 
 const Home = lazy(() =>
   import('./pages/HomePage')
@@ -122,8 +125,35 @@ const routes = [
       icon:"user",
       RequireAuth:false,
     }
+  },
+  {
+    path: '/:id/dashboard/saved-rooms',
+    element: <Saved/>,
+    meta:{
+      name:"Saved",
+      icon:"user",
+      RequireAuth:false,
+    }
+  },
+  {
+    path: '/:id/dashboard/messages',
+    element: <Messages/>,
+    meta:{
+      name:"Messages",
+      icon:"user",
+      RequireAuth:false,
+    }
   }
   ,
+  {
+    path: '/2/dashboard/messages/msg-id',
+    element: <MssgCont/>,
+    meta:{
+      name:"Message Content",
+      icon:"user",
+      RequireAuth:false,
+    }
+  },
   {
     path: '*',
     element: <PageNotFound/>,

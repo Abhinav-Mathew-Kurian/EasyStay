@@ -48,17 +48,17 @@ const AppBar = () => {
           <button onClick={() => navigate(`/${id}/dashboard/manage-listings`)} className="text-[#FAFAFA] hover:text-[#00C49A] px-4 py-2 rounded transition">
             Manage Listings
           </button>
-          <button onClick={() => navigate('/messages')} className="text-[#FAFAFA] hover:text-[#00C49A] px-3 py-2 rounded transition" title="Messages">
+          <button onClick={() => navigate(`/${id}/dashboard/messages`)} className="text-[#FAFAFA] hover:text-[#00C49A] px-3 py-2 rounded transition" title="Messages">
             <MessageSquare size={20} />
           </button>
-          <button onClick={() => navigate('/saved-rooms')} className="text-[#FAFAFA] hover:text-[#00C49A] flex items-center px-3 py-2 rounded transition" title="Saved Rooms">
+          <button onClick={() => navigate(`/${id}/dashboard/saved-rooms`)} className="text-[#FAFAFA] hover:text-[#00C49A] flex items-center px-3 py-2 rounded transition" title="Saved Rooms">
             <Heart size={20} />
           </button>
         </div>
 
         {/* Profile Dropdown */}
-        <div className="flex items-center relative">
-          <button onClick={toggleLogoutMenu} className="text-[#FAFAFA] hover:text-[#00C49A] p-2 border-2 border-white rounded-full" ref={logoutRef}>
+        <div className="flex items-center relative" ref={logoutRef}>
+          <button onClick={toggleLogoutMenu} className="text-[#FAFAFA] hover:text-[#00C49A] p-2 border-2 border-white rounded-full">
             <User size={20} />
           </button>
 
@@ -118,7 +118,7 @@ const AppBar = () => {
           <li className="py-2">
             <button
               onClick={() => {
-                navigate('/messages');
+                navigate(`/${id}/dashboard/messages`);
                 setIsMobileMenuOpen(false);
               }}
               className="w-full flex items-center text-[#FAFAFA] py-2 px-3 hover:bg-[#2D2D2D]/30 hover:text-[#00C49A] rounded"
@@ -129,7 +129,7 @@ const AppBar = () => {
           <li className="py-2">
             <button
               onClick={() => {
-                navigate('/saved-rooms');
+                navigate(`/${id}/dashboard/saved-rooms`);
                 setIsMobileMenuOpen(false);
               }}
               className="w-full flex items-center text-[#FAFAFA] py-2 px-3 hover:bg-[#2D2D2D]/30 hover:text-[#00C49A] rounded"
