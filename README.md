@@ -1,3 +1,4 @@
 
 Buiding Frontend--100% done
-Backend with TypeScript Started
+
+Backend with **TypeScript** Auth Completed
