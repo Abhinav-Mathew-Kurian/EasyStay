@@ -3,9 +3,13 @@ import {
   Mail, Lock, Eye, EyeOff, User, Phone, ArrowRight, 
   Shield, CheckCircle, AlertCircle, Home, Building,
   Facebook, Chrome, Github, Calendar, MapPin
-} from 'lucide-react';
-
+} from 'lucide-react'
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 const Register = () => {
+  const navigate=useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -19,6 +23,8 @@ const Register = () => {
     agreeToTerms: false,
     subscribeNewsletter: false
   });
+
+
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -109,20 +115,50 @@ const Register = () => {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep2()) return;
-    
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      alert('Registration successful! Please check your email for verification.');
-      console.log('Registration data:', formData);
-    }, 2000);
-  };
+  if (!validateStep2()) return;
+
+  setIsLoading(true);
+
+  try {
+    const payload = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      dateOfBirth: formData.dateOfBirth,
+      email: formData.email,
+      password: formData.password,
+      gender: formData.gender
+    };
+    console.log(payload)
+    const res = await axios.post("http://localhost:5001/api/auth/register", payload);
+
+    // Save JWT token
+    localStorage.setItem("token", res.data.token);
+
+    await Swal.fire({
+        icon: 'success',
+        title: 'Registration successful',
+        text: 'Your account was created successfully.',
+        confirmButtonText: 'Go to dashboard'
+      });
+
+      navigate(`/${res.data.userId}/dashboard`);
+    console.log("JWT Token:", res.data.token);
+ 
+
+  } catch (err) {
+    if (err.response && err.response.data) {
+      setErrors({ apiError: err.response.data.message || "Registration failed" });
+    } else {
+      setErrors({ apiError: "Something went wrong. Please try again." });
+    }
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleSocialRegister = (provider) => {
     console.log(`Register with ${provider}`);
-    alert(`${provider} registration clicked`);
+    Swal.fire('Not implemented', `${provider} signup is not implemented yet.`, 'info');
   };
 
   return (
@@ -429,8 +465,8 @@ const Register = () => {
                   >
                     <option value="">Select gender</option>
                     <option value="male">Male</option>
-                    <option value="female"></option>
-                                        <option value="female">Female</option>
+                    <option value="female">female</option>
+                                        
                     <option value="other">Other</option>
                   </select>
                   {errors.gender && (

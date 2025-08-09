@@ -7,10 +7,12 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, dateOfBirth, email, password, gender } = req.body;
+    const { firstName, lastName, dateOfBirth, email, password, gender } =
+      req.body;
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: 'User already exists' });
+    if (existingUser)
+      return res.status(400).json({ message: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -25,11 +27,14 @@ export const register = async (req: Request, res: Response) => {
 
     await user.save();
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+      expiresIn: "1d",
+    });
 
-    res.status(201).json({ token });
+    res.status(201).json({ token, userId: user._id });
   } catch (err) {
-    res.status(500).json({ message: 'Something went wrong', error: err });
+    console.error("Register error:", err); // This will print full details in terminal
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -38,15 +43,18 @@ export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!isMatch)
+      return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
-    res.json({ token });
+    res.json({ token, userId: user._id });
   } catch (err) {
-    res.status(500).json({ message: 'Something went wrong', error: err });
+    res.status(500).json({ message: "Something went wrong", error: err });
   }
 };
