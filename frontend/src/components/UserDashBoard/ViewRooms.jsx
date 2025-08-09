@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import DemoListing from './demolisting';
 import { Save, Hotel, Star, StarHalf } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const ViewRooms = () => {
   const navigate=useNavigate()
   const [listing, setListing] = useState([]);
 
-
+ const { id } = useParams();
   const handleViewMore=(roomId)=>{
-    navigate(`/2/dashboard/view-details/${roomId}`)
+    navigate(`/${id}/dashboard/view-details/${roomId}`)
   }
 
   const getStars = (rating, count) => {
