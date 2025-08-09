@@ -211,7 +211,7 @@ const Register = () => {
                       type="text"
                       value={formData.firstName}
                       onChange={(e) => handleInputChange('firstName', e.target.value)}
-                      className={`w-full pl-10 pr-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors ${
+                      className={`w-full pl-10 pr-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors text-white placeholder-gray-400 ${
                         errors.firstName 
                           ? 'border-red-500 focus:border-red-500' 
                           : 'border-gray-600 focus:border-[#00C49A]'
@@ -235,7 +235,7 @@ const Register = () => {
                     type="text"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className={`w-full px-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors ${
+                    className={`w-full px-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors text-white placeholder-gray-400 ${
                       errors.lastName 
                         ? 'border-red-500 focus:border-red-500' 
                         : 'border-gray-600 focus:border-[#00C49A]'
@@ -262,7 +262,7 @@ const Register = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors ${
+                    className={`w-full pl-10 pr-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors text-white placeholder-gray-400 ${
                       errors.email 
                         ? 'border-red-500 focus:border-red-500' 
                         : 'border-gray-600 focus:border-[#00C49A]'
@@ -289,7 +289,7 @@ const Register = () => {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors ${
+                    className={`w-full pl-10 pr-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors text-white placeholder-gray-400 ${
                       errors.phone 
                         ? 'border-red-500 focus:border-red-500' 
                         : 'border-gray-600 focus:border-[#00C49A]'
@@ -367,7 +367,7 @@ const Register = () => {
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
-                    className={`w-full pl-10 pr-12 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors ${
+                    className={`w-full pl-10 pr-12 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors text-white placeholder-gray-400 ${
                       errors.password 
                         ? 'border-red-500 focus:border-red-500' 
                         : 'border-gray-600 focus:border-[#00C49A]'
@@ -400,7 +400,7 @@ const Register = () => {
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    className={`w-full pl-10 pr-12 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors ${
+                    className={`w-full pl-10 pr-12 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors text-white placeholder-gray-400 ${
                       errors.confirmPassword 
                         ? 'border-red-500 focus:border-red-500' 
                         : 'border-gray-600 focus:border-[#00C49A]'
@@ -435,7 +435,7 @@ const Register = () => {
                       type="date"
                       value={formData.dateOfBirth}
                       onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                      className={`w-full pl-10 pr-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors ${
+                      className={`w-full pl-10 pr-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors text-white placeholder-gray-400 ${
                         errors.dateOfBirth 
                           ? 'border-red-500 focus:border-red-500' 
                           : 'border-gray-600 focus:border-[#00C49A]'
@@ -457,7 +457,7 @@ const Register = () => {
                   <select
                     value={formData.gender}
                     onChange={(e) => handleInputChange('gender', e.target.value)}
-                    className={`w-full px-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors ${
+                    className={`w-full px-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors text-white ${
                       errors.gender 
                         ? 'border-red-500 focus:border-red-500' 
                         : 'border-gray-600 focus:border-[#00C49A]'

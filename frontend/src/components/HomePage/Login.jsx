@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     Mail, Lock, Eye, EyeOff, User, Phone, ArrowRight,
     Shield, CheckCircle, AlertCircle, Home, Building,
     Facebook, Chrome, Github
 } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+import axios from 'axios'
 const Login = () => {
-    const navigate = useNavigate();
-
+    const navigate =useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -51,21 +52,34 @@ const Login = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = async () => {
+      const handleSubmit = async () => {
         if (!validateForm()) return;
 
         setIsLoading(true);
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false);
-            alert('Login successful!');
-            console.log('Login data:', formData);
-        }, 2000);
+        
+        try{
+            const payload ={
+                email:formData.email,
+                password:formData.password,
+            };
+            const  res = await axios.post("http://localhost:5001/api/auth/login", payload);
+            localStorage.setItem("token", res.data.token);
+            await Swal.fire({
+                    icon: 'success',
+                    title: 'Login successful',
+                    confirmButtonText: 'Go to dashboard'
+                  });
+            
+                  navigate(`/${res.data.userId}/dashboard`);
+                console.log("JWT Token:", res.data.token);
+        }catch(error){
+            console.log(error)
+        }  
     };
 
     const handleSocialLogin = (provider) => {
-        console.log(`Login with ${provider}`);
-        alert(`${provider} login clicked`);
+      console.log(`Register with ${provider}`);
+      Swal.fire('Not implemented', `${provider} signup is not implemented yet.`, 'info');
     };
 
     return (
@@ -94,7 +108,7 @@ const Login = () => {
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => handleInputChange('email', e.target.value)}
-                                    className={`w-full pl-10 pr-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors ${errors.email
+                                    className={`w-full pl-10 pr-4 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors text-white placeholder-gray-400 ${errors.email
                                             ? 'border-red-500 focus:border-red-500'
                                             : 'border-gray-600 focus:border-[#00C49A]'
                                         }`}
@@ -120,7 +134,7 @@ const Login = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     value={formData.password}
                                     onChange={(e) => handleInputChange('password', e.target.value)}
-                                    className={`w-full pl-10 pr-12 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors ${errors.password
+                                    className={`w-full pl-10 pr-12 py-3 bg-[#1E1E2F] border rounded-lg focus:outline-none transition-colors text-white placeholder-gray-400 ${errors.password
                                             ? 'border-red-500 focus:border-red-500'
                                             : 'border-gray-600 focus:border-[#00C49A]'
                                         }`}
@@ -221,7 +235,6 @@ const Login = () => {
                         >
                             Sign up here
                         </button>
-
                     </p>
                 </div>
 

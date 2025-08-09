@@ -76,6 +76,8 @@ const AppBar = () => {
               <button
                 className="flex items-center w-full px-4 py-2 text-[#FAFAFA] hover:bg-[#2D2D2D]/50"
                 onClick={() => {
+                 localStorage.removeItem("token"); 
+
                   setIsLogoutOpen(false);
                   navigate("/login");
                 }}
@@ -151,8 +153,10 @@ const AppBar = () => {
           <li className="py-2">
             <button
               onClick={() => {
+                 localStorage.removeItem("token"); 
                 setIsMobileMenuOpen(false);
                 navigate("/login");
+                
               }}
               className="w-full flex items-center text-[#FAFAFA] py-2 px-3 hover:bg-[#2D2D2D]/30 hover:text-[#00C49A] rounded"
             >
