@@ -33,7 +33,7 @@ export const register = async (req: Request, res: Response) => {
 
     res.status(201).json({ token, userId: user._id });
   } catch (err) {
-    console.error("Register error:", err); // This will print full details in terminal
+    console.error("Register error:", err); 
     res.status(500).json({ message: "Something went wrong" });
   }
 };
