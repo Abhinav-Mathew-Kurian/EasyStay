@@ -5,4 +5,6 @@ Backend with **TypeScript** Auth Completed
 
 Complete Login Resgister **frontend** and **backend** done
 
-Backen and frontend for Listing is done just need to sync it
+Backend and frontend for Listing is done just need to sync it ----> DONE 100%
+
+Now view Listing, filetring and other logic in building
