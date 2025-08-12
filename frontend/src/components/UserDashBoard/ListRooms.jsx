@@ -5,7 +5,7 @@ import {
   ChevronsUp, MessageCircle, Home, Calendar, Plus, X, Upload,
   Building, FileText, Settings, Save, Loader
 } from 'lucide-react';
-
+import axios from 'axios';
 const ListRooms = () => {
   const [formData, setFormData] = useState({
     title: '',
@@ -99,46 +99,17 @@ const ListRooms = () => {
     }));
   };
 
-  const uploadToCloudinary = async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'unsigned_preset'); // You'll need to create this in Cloudinary
-    formData.append('cloud_name', 'dedt5sdqd');
-    
-    try {
-      const response = await fetch('https://api.cloudinary.com/v1_1/dedt5sdqd/image/upload', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await response.json();
-      return data.secure_url;
-    } catch (error) {
-      console.error('Upload failed:', error);
-      throw error;
-    }
-  };
-
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
     if (files.length + formData.images.length > 5) {
       alert('Maximum 5 images allowed');
       return;
     }
 
-    setUploading(true);
-    try {
-      const uploadPromises = files.map(file => uploadToCloudinary(file));
-      const imageUrls = await Promise.all(uploadPromises);
-      
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, ...imageUrls]
-      }));
-    } catch (error) {
-      alert('Upload failed. Please try again.');
-    } finally {
-      setUploading(false);
-    }
+    setFormData(prev => ({
+      ...prev,
+      images: [...prev.images, ...files]
+    }));
   };
 
   const removeImage = (index) => {
@@ -148,41 +119,82 @@ const ListRooms = () => {
     }));
   };
 
-  const handleSubmit = async () => {
-    if (formData.images.length < 3) {
-      alert('Please upload at least 3 images');
-      return;
+const handleSubmit = async () => {
+  if (formData.images.length < 3) {
+    alert('Please upload at least 3 images');
+    return;
+  }
+
+  const token = localStorage.getItem('token'); 
+
+  if (!token) {
+    alert('You must be logged in to submit.');
+    return;
+  }
+
+  const submitData = new FormData();
+
+  submitData.append('title', formData.title);
+  submitData.append('slug', formData.slug);
+  submitData.append('type', formData.type);
+  submitData.append('description', formData.description);
+  submitData.append('location', JSON.stringify(formData.location));
+  submitData.append('state', formData.state);
+  submitData.append('pincode', formData.pincode);
+
+  // Clean occupancy.allowed before sending, set ["0"] if empty
+  let cleanedAllowed = formData.occupancy.allowed.filter(item => item.trim() !== '');
+  if (cleanedAllowed.length === 0) {
+    cleanedAllowed = ["0"];
+  }
+  submitData.append('occupancy', JSON.stringify({
+    ...formData.occupancy,
+    allowed: cleanedAllowed
+  }));
+
+  submitData.append('shared_with', formData.shared_with.toString());
+  submitData.append('current_occupants', formData.current_occupants.toString());
+  submitData.append('is_occupied', formData.is_occupied.toString());
+  submitData.append('amenities', JSON.stringify(formData.amenities));
+  submitData.append('restrictions', JSON.stringify(formData.restrictions));
+  submitData.append('monthly_rent', formData.monthly_rent.toString());
+
+  submitData.append(
+    'availability',
+    JSON.stringify({
+      ...formData.availability,
+      available_from: formData.availability.available_from
+        ? new Date(formData.availability.available_from)
+        : new Date(),
+    })
+  );
+
+  submitData.append('owner', JSON.stringify(formData.owner));
+
+  formData.images.forEach((file) => {
+    submitData.append('images', file);
+  });
+
+  try {
+    const response = await axios.post('http://localhost:5001/api/listroom', submitData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 201) {
+      alert('Property listed successfully!');
+      // Reset form or redirect logic here
     }
+  } catch (error) {
+    console.error('Submit error:', error);
+    const message =
+      error.response?.data?.message || error.message || 'Failed to list property';
+    alert(`Error: ${message}`);
+  }
+};
 
-    const submitData = {
-      ...formData,
-      availability: {
-        ...formData.availability,
-        available_from: formData.availability.available_from ? new Date(formData.availability.available_from) : new Date()
-      }
-    };
-
-    try {
-      const response = await fetch('http://localhost:5001/api/listroom', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submitData)
-      });
-
-      if (response.ok) {
-        alert('Property listed successfully!');
-        // Reset form or redirect
-      } else {
-        const error = await response.json();
-        alert(`Error: ${error.message || 'Failed to list property'}`);
-      }
-    } catch (error) {
-      console.error('Submit error:', error);
-      alert('Failed to submit. Please check your connection.');
-    }
-  };
 
   const getAmenityIcon = (amenity) => {
     const iconMap = {
@@ -202,7 +214,7 @@ const ListRooms = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            
+
             {/* Basic Information */}
             <div className="bg-[#2B2B40] rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -365,7 +377,7 @@ const ListRooms = () => {
                   </label>
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium mb-2">Allowed Types</label>
                 <div className="flex gap-2 mb-2">
@@ -621,14 +633,19 @@ const ListRooms = () => {
                   <p className="text-xs text-gray-500">PNG, JPG up to 10MB each</p>
                 </label>
               </div>
-              
+
+
               {formData.images.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-sm text-gray-400">{formData.images.length}/5 images uploaded</p>
                   <div className="grid grid-cols-2 gap-2">
-                    {formData.images.map((url, index) => (
+                    {formData.images.map((file, index) => (
                       <div key={index} className="relative">
-                        <img src={url} alt={`Upload ${index + 1}`} className="w-full h-20 object-cover rounded" />
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Upload ${index + 1}`}
+                          className="w-full h-20 object-cover rounded"
+                        />
                         <button
                           type="button"
                           onClick={() => removeImage(index)}

@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import DemoListing from './demolisting';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Save, Hotel, Star, StarHalf } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from "react-router-dom";
 
 const ViewRooms = () => {
-  const navigate=useNavigate()
-  const [listing, setListing] = useState([]);
+  const navigate = useNavigate();
+  const { id } = useParams(); // If you need user id or something else
 
- const { id } = useParams();
-  const handleViewMore=(roomId)=>{
-    navigate(`/${id}/dashboard/view-details/${roomId}`)
-  }
+  const [listing, setListing] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const handleViewMore = (roomId) => {
+    navigate(`/${id}/dashboard/view-details/${roomId}`);
+  };
 
   const getStars = (rating, count) => {
     const fullStars = Math.floor(rating);
@@ -20,11 +22,13 @@ const ViewRooms = () => {
     return (
       <div className="flex items-center space-x-1 mt-1">
         {Array.from({ length: fullStars }).map((_, i) => (
-          <Star key={`full-${i}`} size={18} className="text-yellow-500 fill-yellow-500" />
+          <Star
+            key={`full-${i}`}
+            size={18}
+            className="text-yellow-500 fill-yellow-500"
+          />
         ))}
-        {halfStars && (
-          <StarHalf size={18} className="text-yellow-500 fill-yellow-500" />
-        )}
+        {halfStars && <StarHalf size={18} className="text-yellow-500 fill-yellow-500" />}
         {Array.from({ length: emptyStars }).map((_, i) => (
           <Star key={`empty-${i}`} size={18} className="text-gray-400" />
         ))}
@@ -36,15 +40,32 @@ const ViewRooms = () => {
   };
 
   useEffect(() => {
-    setListing(DemoListing);
+    const fetchListings = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await axios.get("http://localhost:5001/api/listroom"); // Adjust endpoint if needed
+        setListing(response.data.listings || []);
+      } catch (err) {
+        console.error("Failed to fetch listings", err);
+        setError("Failed to load listings");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListings();
   }, []);
+
+  if (loading) return <div>Loading listings...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
     <div className="flex-1 h-screen overflow-y-auto p-2 md:ml-20 md:p-6">
       <div className="flex flex-wrap gap-4 md:gap-6">
         {listing.map((list, index) => (
           <div
-            key={index}
+            key={list._id || index}
             className="
               w-128 md:w-96
               rounded border border-[#B388EB] border-opacity-50
@@ -64,13 +85,13 @@ const ViewRooms = () => {
               <div className="relative mb-4 md:mb-6 overflow-hidden rounded-xl h-80 md:h-94 shadow-xl">
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E2F]/80 via-transparent to-[#1E1E2F]/40 z-10"></div>
                 <img
-                  src={list.images}
+                  src={list.images && list.images.length > 0 ? list.images[0] : ""}
                   alt="EasyStay Accommodations"
                   className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 />
                 <div className="absolute bottom-0 left-0 right-0 z-20 p-4">
                   <p className="text-[#FAFAFA] text-base font-semibold">
-                    {list.location.city}, {list.location.area}
+                    {list.location?.city}, {list.location?.area}
                   </p>
                 </div>
               </div>
@@ -81,12 +102,14 @@ const ViewRooms = () => {
                     <span className="font-extrabold text-xl mb-1">
                       ₹ {list.monthly_rent}/mo
                     </span>
-                    {getStars(list.reviews.rating, list.reviews.count)}
+                    {list.reviews
+                      ? getStars(list.reviews.rating, list.reviews.count)
+                      : null}
                   </div>
                 </div>
 
                 <div
-                  onClick={() => console.log('Save clicked')}
+                  onClick={() => console.log("Save clicked")}
                   className="
                                   bg-gradient-to-r from-[#1E1E2F]/70 to-[#1E1E2F]/50
                                   border-2 border-[#00C49A]
@@ -103,7 +126,6 @@ const ViewRooms = () => {
                   <span className="text-[#FAFAFA] text-sm">Save</span>
                 </div>
 
-
                 <div
                   className="
                           bg-gradient-to-r from-[#1E1E2F]/70 to-[#1E1E2F]/50
@@ -116,14 +138,12 @@ const ViewRooms = () => {
                           hover:scale-[1.02]
                           transition-transform duration-200
                         "
-                        onClick={()=>handleViewMore(list.id)}
+                  onClick={() => handleViewMore(list._id)}
                 >
                   <Hotel className="text-[#00C49A] mr-2" size={18} />
                   <span className="text-[#FAFAFA] text-sm">View More</span>
                 </div>
-
               </div>
-
             </div>
           </div>
         ))}

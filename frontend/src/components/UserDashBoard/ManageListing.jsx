@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; 
 import {
   MapPin, Users, Star, Phone, User, CheckCircle, Clock,
   Shield, ShieldCheck, Wifi, Car, Coffee, Utensils, Fan, Table,
@@ -6,25 +7,49 @@ import {
   DollarSign, Building, FileText, Settings, Save, Edit, Trash2,
   Eye, MoreVertical, Filter, Search
 } from 'lucide-react';
-import DemoListing from './demolisting';
+
+import { useParams } from 'react-router-dom';
 
 const ManageListing = () => {
+  const { userId } = useParams();  
   const [listings, setListings] = useState([]);
   const [filteredListings, setFilteredListings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
-  const [editingListing, setEditingListing] = useState(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
 
   useEffect(() => {
-    setListings(DemoListing);
-    setFilteredListings(DemoListing);
-  }, []);
+    if (!userId) return;
+
+    const fetchUserListings = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await axios.get(`http://localhost:5001/api/listroom/user/${userId}`);
+        
+        const dataListings = res.data.listings || res.data || [];
+
+        setListings(dataListings);
+        setFilteredListings(dataListings);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch listings.');
+        setListings([]);
+        setFilteredListings([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserListings();
+  }, [userId]);
 
   useEffect(() => {
     let filtered = listings;
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(listing =>
         listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -32,13 +57,15 @@ const ManageListing = () => {
       );
     }
 
-    // Filter by type
     if (filterType !== 'all') {
       filtered = filtered.filter(listing => listing.type === filterType);
     }
 
     setFilteredListings(filtered);
   }, [listings, searchTerm, filterType]);
+
+  if (loading) return <div>Loading listings...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   const getAmenityIcon = (amenity) => {
     const iconMap = {
