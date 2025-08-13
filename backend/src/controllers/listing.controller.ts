@@ -153,7 +153,7 @@ export const deleteListing = async (req: Request, res: Response) => {
 };
 export const getAllListings = async (req: Request, res: Response) => {
   try {
-    const listings = await Listing.find().populate('owner'); // Optional: populate owner details
+    const listings = await Listing.find().populate('owner'); 
     res.json({ listings });
   } catch (error) {
     console.error(error);

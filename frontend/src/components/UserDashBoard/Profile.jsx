@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import {
   User, Mail, Phone, MapPin, Calendar, Edit, Save, X, Camera,
   Shield, ShieldCheck, Star, Home, Building, Eye, EyeOff,
@@ -7,59 +9,55 @@ import {
 } from 'lucide-react';
 
 const Profile = () => {
+  const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
   const [showPassword, setShowPassword] = useState(false);
-  
-  const [profileData, setProfileData] = useState({
-    personal: {
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-      phone: '+91-9876543210',
-      dateOfBirth: '1995-06-15',
-      gender: 'Male',
-      occupation: 'Software Engineer',
-      bio: 'A passionate software engineer looking for comfortable accommodation near tech hubs. I value cleanliness, punctuality, and peaceful living environment.',
-      profileImage: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=300'
-    },
-    address: {
-      street: '123 Tech Park Road',
-      area: 'Kazhakkoottam',
-      city: 'Thiruvananthapuram',
-      state: 'Kerala',
-      pincode: '695582',
-      country: 'India'
-    },
-    preferences: {
-      propertyTypes: ['PG', '1BHK', 'Shared Room'],
-      budgetMin: 5000,
-      budgetMax: 15000,
-      amenities: ['WiFi', 'AC', 'Laundry', 'Parking'],
-      gender: 'Any',
-      foodPreference: 'Vegetarian'
-    },
-    account: {
-      memberSince: '2024-01-15',
-      verified: true,
-      totalListings: 3,
-      totalBookings: 7,
-      rating: 4.6,
-      reviewsReceived: 12
-    }
-  });
 
-  const [tempData, setTempData] = useState(profileData);
+  const [profileData, setProfileData] = useState(null);
+  const [tempData, setTempData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token'); // assuming token is stored as 'token'
+        const res = await axios.get(
+          `http://localhost:5001/api/user/profile/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        setProfileData(res.data);
+        setTempData(res.data);
+        console.log("response data",res.data)
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [id]);
+
 
   const handleEdit = () => {
     setIsEditing(true);
     setTempData({ ...profileData });
   };
 
-  const handleSave = () => {
-    setProfileData(tempData);
-    setIsEditing(false);
-    alert('Profile updated successfully!');
+  const handleSave = async () => {
+    try {
+      await axios.put(`http://localhost:5001/api/user/profile/${id}`, tempData);
+      setProfileData(tempData);
+      setIsEditing(false);
+      alert('Profile updated successfully!');
+    } catch (err) {
+      console.error("Error updating profile:", err);
+    }
   };
 
   const handleCancel = () => {
@@ -84,11 +82,10 @@ const Profile = () => {
     { id: 'account', label: 'Account', icon: Shield }
   ];
 
-  const propertyTypes = ['PG', '1BHK', '2BHK', '3BHK', 'Single Room', 'Shared Room'];
-  const amenitiesList = ['WiFi', 'AC', 'Fan', 'Laundry', 'Meals Included', 'Parking', 'Lift', 'Security'];
+  if (loading) return <p>Loading profile...</p>;
+  if (!profileData) return <p>No profile data found.</p>;
 
   const data = isEditing ? tempData : profileData;
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1E1E2F] to-[#00C49A] text-white">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
@@ -106,10 +103,11 @@ const Profile = () => {
               <div className="text-center mb-6">
                 <div className="relative inline-block">
                   <img
-                    src={data.personal.profileImage}
+                    src={data?.personal?.profileImage || "https://via.placeholder.com/150?text=No+Image"}
                     alt="Profile"
                     className="w-24 h-24 rounded-full object-cover border-4 border-[#00C49A]"
                   />
+
                   {isEditing && (
                     <button className="absolute bottom-0 right-0 bg-[#00C49A] p-2 rounded-full hover:bg-[#00b388]">
                       <Camera className="w-4 h-4" />
@@ -148,11 +146,10 @@ const Profile = () => {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
-                        activeTab === tab.id
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${activeTab === tab.id
                           ? 'bg-[#00C49A] text-white'
                           : 'hover:bg-[#1E1E2F] text-white/80'
-                      }`}
+                        }`}
                     >
                       <Icon className="w-5 h-5" />
                       {tab.label}
@@ -413,11 +410,10 @@ const Profile = () => {
                                 : [...currentTypes, type];
                               handleInputChange('preferences', 'propertyTypes', newTypes);
                             }}
-                            className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                              data.preferences.propertyTypes.includes(type)
+                            className={`px-3 py-2 rounded-lg text-sm font-medium ${data.preferences.propertyTypes.includes(type)
                                 ? 'bg-[#00C49A] text-white'
                                 : 'bg-[#1E1E2F] text-white/80 hover:bg-[#00C49A]/20'
-                            }`}
+                              }`}
                           >
                             {type}
                           </button>
@@ -477,11 +473,10 @@ const Profile = () => {
                                 : [...currentAmenities, amenity];
                               handleInputChange('preferences', 'amenities', newAmenities);
                             }}
-                            className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                              data.preferences.amenities.includes(amenity)
+                            className={`px-3 py-2 rounded-lg text-sm font-medium ${data.preferences.amenities.includes(amenity)
                                 ? 'bg-[#00C49A] text-white'
                                 : 'bg-[#1E1E2F] text-white/80 hover:bg-[#00C49A]/20'
-                            }`}
+                              }`}
                           >
                             {amenity}
                           </button>
