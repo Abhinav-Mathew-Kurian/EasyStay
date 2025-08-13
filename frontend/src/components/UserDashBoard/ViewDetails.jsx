@@ -8,9 +8,14 @@ import {
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import axios from "axios";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Navigation } from "swiper/modules";
+
 
 const ViewDetails = () => {
-  const { userId, roomId } = useParams();
+  const { id, roomId } = useParams();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,26 +42,17 @@ const ViewDetails = () => {
   });
 
   useEffect(() => {
+    console.log("Params:", { id, roomId });
     const fetchUserListings = async () => {
       try {
         setLoading(true);
         setError(null);
 
         const res = await axios.get(
-          `http://localhost:5001/api/listroom/user/${userId}`
+          `http://localhost:5001/api/listroom/room/${roomId}`
         );
 
-        const listings = res.data.listings || [];
-
-        // Find the specific listing by roomId
-        const foundListing = listings.find((item) => item._id === roomId);
-
-        if (!foundListing) {
-          setError("Listing not found.");
-          setListing(null);
-        } else {
-          setListing(foundListing);
-        }
+        setListing(res.data);
       } catch (err) {
         console.error(err);
         setError("Failed to load listing.");
@@ -66,10 +62,11 @@ const ViewDetails = () => {
       }
     };
 
-    if (userId && roomId) {
+    if (id && roomId) {
       fetchUserListings();
     }
-  }, [userId, roomId]);
+  }, [id, roomId]);
+
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
@@ -80,12 +77,24 @@ const ViewDetails = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
         {/* Hero */}
         <div className="relative h-[300px] md:h-[450px] rounded-xl overflow-hidden shadow-lg">
-          <img
-            src={listing.images[0]}
-            alt={listing.title}
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <Swiper
+            modules={[Navigation]}
+            navigation
+            loop
+            className="h-full"
+          >
+            {listing.images.map((img, idx) => (
+              <SwiperSlide key={idx}>
+                <img
+                  src={img}
+                  alt={`${listing.title} - ${idx + 1}`}
+                  className="w-full h-full object-cover object-center"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
           <div className="absolute top-4 left-4">
             {listing.availability.is_available ? (
               <span className="inline-flex items-center gap-1 bg-[#00C49A]/90 px-3 py-1 rounded-full text-xs font-medium">
@@ -108,6 +117,7 @@ const ViewDetails = () => {
             </div>
           </div>
         </div>
+
 
         {/* Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

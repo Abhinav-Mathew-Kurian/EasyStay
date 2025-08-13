@@ -188,3 +188,13 @@ export const getListingsByUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getListingByListingId =async(req:Request, res:Response)=>{
+  try{
+    const roomId =req.params.roomId;
+    const room =await Listing.findById(roomId)
+    res.json(room)
+  }catch(error){
+    console.log("Error fetching listing by ID:",error)
+  }
+}

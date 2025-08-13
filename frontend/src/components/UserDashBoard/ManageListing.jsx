@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; 
+import axios from 'axios';
 import {
   MapPin, Users, Star, Phone, User, CheckCircle, Clock,
   Shield, ShieldCheck, Wifi, Car, Coffee, Utensils, Fan, Table,
@@ -11,27 +11,30 @@ import {
 import { useParams } from 'react-router-dom';
 
 const ManageListing = () => {
-  const { userId } = useParams();  
+  const { id } = useParams();
   const [listings, setListings] = useState([]);
   const [filteredListings, setFilteredListings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(null);
+  const [editingListing, setEditingListing] = useState(null);
+
 
 
   useEffect(() => {
-    if (!userId) return;
+    if (!id) return;
 
     const fetchUserListings = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const res = await axios.get(`http://localhost:5001/api/listroom/user/${userId}`);
-        
-        const dataListings = res.data.listings || res.data || [];
+        const res = await axios.get(`http://localhost:5001/api/listroom/user/${id}`);
 
+        const dataListings = res.data.listings || res.data || [];
+        console.log("Response data:",res.data)
         setListings(dataListings);
         setFilteredListings(dataListings);
       } catch (err) {
@@ -45,7 +48,7 @@ const ManageListing = () => {
     };
 
     fetchUserListings();
-  }, [userId]);
+  }, [id]);
 
   useEffect(() => {
     let filtered = listings;
@@ -93,7 +96,7 @@ const ManageListing = () => {
   };
 
   const handleSaveEdit = () => {
-    setListings(prev => prev.map(listing => 
+    setListings(prev => prev.map(listing =>
       listing.id === editingListing.id ? editingListing : listing
     ));
     setEditingListing(null);
@@ -101,15 +104,15 @@ const ManageListing = () => {
   };
 
   const toggleAvailability = (id) => {
-    setListings(prev => prev.map(listing => 
-      listing.id === id 
-        ? { 
-            ...listing, 
-            availability: { 
-              ...listing.availability, 
-              is_available: !listing.availability.is_available 
-            } 
-          } 
+    setListings(prev => prev.map(listing =>
+      listing.id === id
+        ? {
+          ...listing,
+          availability: {
+            ...listing.availability,
+            is_available: !listing.availability.is_available
+          }
+        }
         : listing
     ));
   };
@@ -167,9 +170,9 @@ const ManageListing = () => {
             <div key={listing.id} className="bg-[#2B2B40] rounded-lg overflow-hidden shadow-lg">
               {/* Image */}
               <div className="relative h-48">
-                <img 
-                  src={listing.images[0]} 
-                  alt={listing.title} 
+                <img
+                  src={listing.images[0]}
+                  alt={listing.title}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-3 left-3">
@@ -193,7 +196,7 @@ const ManageListing = () => {
               {/* Content */}
               <div className="p-5">
                 <h3 className="font-semibold text-lg mb-2 line-clamp-2">{listing.title}</h3>
-                
+
                 <div className="flex items-center gap-2 text-sm text-white/80 mb-3">
                   <MapPin className="w-4 h-4" />
                   <span>{listing.location.area}, {listing.location.city}</span>
@@ -255,11 +258,10 @@ const ManageListing = () => {
                 {/* Toggle Availability */}
                 <button
                   onClick={() => toggleAvailability(listing.id)}
-                  className={`w-full mt-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    listing.availability.is_available
+                  className={`w-full mt-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${listing.availability.is_available
                       ? 'bg-purple-600 hover:bg-purple-700'
                       : 'bg-[#00C49A] hover:bg-[#00b388]'
-                  }`}
+                    }`}
                 >
                   {listing.availability.is_available ? 'Mark as Unavailable' : 'Mark as Available'}
                 </button>
