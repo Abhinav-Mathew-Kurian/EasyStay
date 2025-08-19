@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Save, Hotel, Star, StarHalf } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-
+  import Swal from "sweetalert2";
 const ViewRooms = () => {
   const navigate = useNavigate();
   const { id } = useParams(); 
@@ -38,6 +38,34 @@ const ViewRooms = () => {
       </div>
     );
   };
+
+
+
+const handleSaved = async (listingId) => {
+  try {
+    const res = await axios.put(
+      `http://localhost:5001/api/user/save/${id}`, // user id from useParams
+      { listingId }
+    );
+
+    if (res.data.success) {
+      Swal.fire({
+        icon: "success",
+        title: "Saved!",
+        text: "This listing has been added to your saved list.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Failed to save this listing. Try again later.",
+    });
+  }
+};
+
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -130,22 +158,23 @@ if (listing.length === 0)
                 </div>
 
                 <div
-                  onClick={() => console.log("Save clicked")}
-                  className="
-                                  bg-gradient-to-r from-[#1E1E2F]/70 to-[#1E1E2F]/50
-                                  border-2 border-[#00C49A]
-                                  p-2 md:p-3
-                                  rounded-lg
-                                  flex items-center justify-center md:justify-start
-                                  cursor-pointer
-                                  hover:bg-[#1E1E2F]/80
-                                  hover:scale-[1.02]
-                                  transition-transform duration-200
-                                "
-                >
-                  <Save className="text-[#00C49A] mr-2" size={18} />
-                  <span className="text-[#FAFAFA] text-sm">Save</span>
-                </div>
+  onClick={() => handleSaved(list._id)}
+  className="
+    bg-gradient-to-r from-[#1E1E2F]/70 to-[#1E1E2F]/50
+    border-2 border-[#00C49A]
+    p-2 md:p-3
+    rounded-lg
+    flex items-center justify-center md:justify-start
+    cursor-pointer
+    hover:bg-[#1E1E2F]/80
+    hover:scale-[1.02]
+    transition-transform duration-200
+  "
+>
+  <Save className="text-[#00C49A] mr-2" size={18} />
+  <span className="text-[#FAFAFA] text-sm">Save</span>
+</div>
+
 
                 <div
                   className="

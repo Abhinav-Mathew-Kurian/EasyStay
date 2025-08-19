@@ -40,8 +40,8 @@ const upload = multer({
 router.get('/profile/:id', authMiddleware, getProfile);
 router.put('/profile/:id', authMiddleware, updateProfile);
 
-router.put('/save',addToSavedListing)
-router.delete('/save',removeFromSavedListing)
+router.put("/save/:id", addToSavedListing);
+router.delete("/save/:id", removeFromSavedListing);
 // Image upload routes
 router.post('/profile/:id/image', authMiddleware, upload.single('profileImage'), uploadProfileImage);
 
