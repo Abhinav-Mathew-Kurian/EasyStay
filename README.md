@@ -12,3 +12,6 @@ Now view Listing, filetring and other logic in building-->Kinda done small corre
 now doing Profile---the data fron User model is not enough in profile so we need to think of something.
 
 Completed the profile setup
+
+
+started with save functionality
