@@ -6,7 +6,9 @@ export interface IUser extends Document {
   dateOfBirth: Date;
   email: string;
   password: string;
+  phone?: string;
   gender: "male" | "female" | "other";
+  profileImage?: string;
 
   occupation?: string;
   bio?: string;
@@ -33,6 +35,11 @@ export interface IUser extends Document {
 
   savedListings?: mongoose.Types.ObjectId[];
   listedProperties?: mongoose.Types.ObjectId[];
+  conversations?: mongoose.Types.ObjectId[]; 
+  
+  // Additional fields for user activity
+  lastActive?: Date;
+  isOnline?: boolean;
 }
 
 const userSchema = new Schema<IUser>(
@@ -48,7 +55,9 @@ const userSchema = new Schema<IUser>(
       trim: true,
     },
     password: { type: String, required: true },
+    phone: { type: String, trim: true },
     gender: { type: String, enum: ["male", "female", "other"], required: true },
+    profileImage: { type: String, trim: true },
 
     emailVerified: { type: Boolean, default: false },
     phoneVerified: { type: Boolean, default: false },
@@ -85,9 +94,26 @@ const userSchema = new Schema<IUser>(
     listedProperties: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Listing" },
     ],
+    conversations: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Conversation" },
+    ],
+
+    lastActive: { type: Date, default: Date.now },
+    isOnline: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
+
+userSchema.index({ email: 1 });
+userSchema.index({ phone: 1 });
+userSchema.index({ 'address.city': 1 });
+userSchema.index({ lastActive: 1 });
+
+
+userSchema.pre('save', function(next) {
+  this.lastActive = new Date();
+  next();
+});
 
 const User = mongoose.model<IUser>("User", userSchema);
 export default User;

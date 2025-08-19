@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Listing from "../models/listing.model";
 import User from "../models/user.model";
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "../config/cloudinary";
 
 // Cloudinary config
 cloudinary.config({
