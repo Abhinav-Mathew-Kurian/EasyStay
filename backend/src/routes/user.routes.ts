@@ -5,6 +5,8 @@ import {
   getProfile,
   updateProfile,
   uploadProfileImage,
+  addToSavedListing,
+  removeFromSavedListing
 } from '../controllers/user.controller';
 
 const router = express.Router();
@@ -38,7 +40,8 @@ const upload = multer({
 router.get('/profile/:id', authMiddleware, getProfile);
 router.put('/profile/:id', authMiddleware, updateProfile);
 
-
+router.put('/save',addToSavedListing)
+router.delete('/save',removeFromSavedListing)
 // Image upload routes
 router.post('/profile/:id/image', authMiddleware, upload.single('profileImage'), uploadProfileImage);
 

@@ -290,3 +290,55 @@ export const uploadProfileImage = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+export const addToSavedListing = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { listingId } = req.body;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(listingId)) {
+      return res.status(400).json({ success: false, message: "Invalid ID format" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $addToSet: { savedListings: listingId } }, 
+      { new: true } 
+    ).populate("savedListings"); 
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({ success: true, savedListings: user.savedListings });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+export const removeFromSavedListing = async (req: Request, res: Response) => {
+  const { id } = req.params;          
+  const { listingId } = req.body;    
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(listingId)) {
+      return res.status(400).json({ success: false, message: "Invalid ID format" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $pull: { savedListings: listingId } }, 
+      { new: true }
+    ).populate("savedListings"); 
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({ success: true, savedListings: user.savedListings });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
