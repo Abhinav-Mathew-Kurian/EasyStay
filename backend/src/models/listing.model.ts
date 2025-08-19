@@ -6,10 +6,10 @@ export interface IListing extends Document {
   type: string;
   description: string;
   location: {
+    type: "Point";
+    coordinates: [number, number]; // [longitude, latitude]
     city: string;
     area: string;
-    latitude: number;
-    longitude: number;
   };
   state: string;
   pincode: string;
@@ -23,7 +23,7 @@ export interface IListing extends Document {
   amenities: string[];
   restrictions: string[];
   monthly_rent: number;
-  images: string[]; // Cloudinary URLs
+  images: string[];
   availability: {
     is_available: boolean;
     available_from: Date;
@@ -46,10 +46,18 @@ const listingSchema = new Schema<IListing>(
     description: { type: String, required: true },
 
     location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        required: true,
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        required: true,
+      },
       city: { type: String, required: true },
       area: { type: String, required: true },
-      latitude: { type: Number, required: true },
-      longitude: { type: Number, required: true },
     },
 
     state: { type: String, required: true },
@@ -95,6 +103,8 @@ const listingSchema = new Schema<IListing>(
   },
   { timestamps: true }
 );
+
+listingSchema.index({ location: "2dsphere" });
 
 const Listing = mongoose.model<IListing>("Listing", listingSchema);
 export default Listing;

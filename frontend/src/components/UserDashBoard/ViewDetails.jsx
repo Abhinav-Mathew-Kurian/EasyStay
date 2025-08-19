@@ -51,7 +51,7 @@ const ViewDetails = () => {
         const res = await axios.get(
           `http://localhost:5001/api/listroom/room/${roomId}`
         );
-
+        console.log("Response data:",res.data)
         setListing(res.data);
       } catch (err) {
         console.error(err);
@@ -181,24 +181,34 @@ const ViewDetails = () => {
             {/* Location Map */}
             <div className="bg-[#2B2B40] rounded-lg p-5 space-y-3">
               <h3 className="text-lg font-semibold">Location Map</h3>
-              <MapContainer
-                center={[listing.location.latitude, listing.location.longitude]}
-                zoom={15}
-                scrollWheelZoom={false}
-                className="h-[300px] rounded-lg z-0"
-              >
-                <TileLayer
-                  attribution="&copy; OpenStreetMap"
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <Marker position={[listing.location.latitude, listing.location.longitude]} icon={customIcon}>
-                  <Popup>
-                    {listing.title}
-                    <br />
-                    {listing.location.area}, {listing.location.city}
-                  </Popup>
-                </Marker>
-              </MapContainer>
+             <MapContainer
+  center={[
+    listing.location.coordinates[1], // latitude
+    listing.location.coordinates[0], // longitude
+  ]}
+  zoom={15}
+  scrollWheelZoom={false}
+  className="h-[300px] rounded-lg z-0"
+>
+  <TileLayer
+    attribution="&copy; OpenStreetMap"
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  />
+  <Marker
+    position={[
+      listing.location.coordinates[1], // latitude
+      listing.location.coordinates[0], // longitude
+    ]}
+    icon={customIcon}
+  >
+    <Popup>
+      {listing.title}
+      <br />
+      {listing.location.area}, {listing.location.city}
+    </Popup>
+  </Marker>
+</MapContainer>
+
             </div>
           </div>
 

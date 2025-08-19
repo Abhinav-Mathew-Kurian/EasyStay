@@ -104,10 +104,7 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-userSchema.index({ email: 1 });
-userSchema.index({ phone: 1 });
-userSchema.index({ 'address.city': 1 });
-userSchema.index({ lastActive: 1 });
+
 
 
 userSchema.pre('save', function(next) {

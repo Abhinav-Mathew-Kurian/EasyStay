@@ -72,9 +72,23 @@ const Login = () => {
             
                   navigate(`/${res.data.userId}/dashboard`);
                 console.log("JWT Token:", res.data.token);
-        }catch(error){
-            console.log(error)
-        }  
+        }catch (error) {
+  console.log(error);
+
+  let msg = "Something went wrong. Please try again.";
+  if (error.response) {
+    msg = error.response.data.message || `Error: ${error.response.status}`;
+  } else if (error.request) {
+  
+    msg = "No response from server. Check your connection.";
+  }
+
+  Swal.fire({
+    icon: 'error',
+    title: 'Login failed',
+    text: msg
+  });
+} 
     };
 
     const handleSocialLogin = (provider) => {

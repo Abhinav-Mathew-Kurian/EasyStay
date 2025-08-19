@@ -138,7 +138,17 @@ const handleSubmit = async () => {
   submitData.append('slug', formData.slug);
   submitData.append('type', formData.type);
   submitData.append('description', formData.description);
-  submitData.append('location', JSON.stringify(formData.location));
+const geoLocation = {
+  city: formData.location.city,
+  area: formData.location.area,
+  type: 'Point',
+  coordinates: [
+    Number(formData.location.longitude), // longitude first
+    Number(formData.location.latitude),  // latitude second
+  ],
+};
+
+submitData.append('location', JSON.stringify(geoLocation));
   submitData.append('state', formData.state);
   submitData.append('pincode', formData.pincode);
 

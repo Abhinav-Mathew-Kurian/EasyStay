@@ -3,14 +3,6 @@ import Listing from "../models/listing.model";
 import User from "../models/user.model";
 import cloudinary from "../config/cloudinary";
 
-// Cloudinary config
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET,
-});
-
-// Create a listing
 
 export const createListing = async (req: Request, res: Response) => {
   try {

@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const ViewRooms = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // If you need user id or something else
+  const { id } = useParams(); 
 
   const [listing, setListing] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,15 +57,29 @@ const ViewRooms = () => {
     fetchListings();
   }, []);
 
-  if (loading)
+if (loading)
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-1 justify-center items-center">
       <div className="w-8 h-8 border-4 border-t-transparent border-purple-500 rounded-full animate-spin"></div>
       <span className="ml-3 text-purple-400 font-medium">Loading...</span>
     </div>
   );
 
+if (listing.length === 0)
+  return (
+    <div className="flex flex-1 flex-col justify-center items-center text-center">
+      <h2 className="text-2xl font-bold text-white mb-4">
+        Sorry, no rooms available for you now.
+      </h2>
+      <p className="text-white/70">
+        We’re working on adding more listings. Please check back later.
+      </p>
+    </div>
+  );
+
+
   if (error) return <div className="text-red-500">{error}</div>;
+
 
   return (
     <div className="flex-1 h-screen overflow-y-auto p-2 md:ml-20 md:p-6">
