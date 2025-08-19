@@ -17,10 +17,9 @@ export const getProfile = async (req: Request, res: Response) => {
     }
 
     const userProfile = await User.findById(userId)
-      .select('-password') // Exclude password from response
+      .select('-password') 
       .populate('savedListings', 'title price location images')
-      .populate('listedProperties', 'title price location images status')
-
+      .populate('listedProperties', 'title price location images status');
 
     if (!userProfile) {
       return res.status(404).json({ 
@@ -35,23 +34,66 @@ export const getProfile = async (req: Request, res: Response) => {
       isOnline: true 
     });
 
+    // Normalize the user data to ensure all expected fields exist
+    const normalizedUser = {
+      ...userProfile.toObject(),
+      address: userProfile.address ? {
+        street: userProfile.address.street || '',
+        area: userProfile.address.area || '',
+        city: userProfile.address.city || '',
+        state: userProfile.address.state || '',
+        pincode: userProfile.address.pincode || ''
+      } : {
+        street: '',
+        area: '',
+        city: '',
+        state: '',
+        pincode: ''
+      },
+      preferences: userProfile.preferences ? {
+        propertyTypes: userProfile.preferences.propertyTypes || [],
+        budgetMin: userProfile.preferences.budgetMin || 0,
+        budgetMax: userProfile.preferences.budgetMax || 0,
+        amenities: userProfile.preferences.amenities || [],
+        genderPreference: userProfile.preferences.genderPreference || 'any',
+        foodPreference: userProfile.preferences.foodPreference || 'any'
+      } : {
+        propertyTypes: [],
+        budgetMin: 0,
+        budgetMax: 0,
+        amenities: [],
+        genderPreference: 'any',
+        foodPreference: 'any'
+      },
+      occupation: userProfile.occupation || '',
+      bio: userProfile.bio || '',
+      phone: userProfile.phone || ''
+    };
+
     res.status(200).json({
       success: true,
-      data: userProfile
+      data: normalizedUser
     });
 
   } catch (err: any) {
-  console.error("Error updating profile:", err);
-  
-  if (err.name === 'ValidationError') {
-    return res.status(400).json({ 
-      success: false, 
-      message: "Validation error",
-      errors: Object.values(err.errors).map((e: any) => e.message)
+    console.error("Error fetching profile:", err);
+    
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Validation error",
+        errors: Object.values(err.errors).map((e: any) => e.message)
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
     });
   }
 };
-}
+
 // Update user profile
 export const updateProfile = async (req: Request, res: Response) => {
   try {
@@ -62,12 +104,47 @@ export const updateProfile = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: "Invalid user ID format" });
     }
 
+    // Remove sensitive/protected fields
     delete updateData.password;
     delete updateData.email;
+    delete updateData._id;
+    delete updateData.__v;
+    delete updateData.emailVerified;
+    delete updateData.phoneVerified;
+    delete updateData.createdAt;
+    delete updateData.updatedAt;
+
+
+    const currentUser = await User.findById(userId);
+    if (!currentUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+
+    const mergedData: any = {
+      ...updateData,
+      lastActive: new Date()
+    };
+
+   
+    if (updateData.address) {
+      mergedData.address = {
+        ...currentUser.address, 
+        ...updateData.address
+      };
+    }
+
+    
+    if (updateData.preferences) {
+      mergedData.preferences = {
+        ...currentUser.preferences, 
+        ...updateData.preferences
+      };
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { ...updateData, lastActive: new Date() },
+      mergedData,
       { new: true, runValidators: true }
     ).select("-password");
 
@@ -75,10 +152,46 @@ export const updateProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
+
+    const normalizedUser = {
+      ...updatedUser.toObject(),
+      address: updatedUser.address ? {
+        street: updatedUser.address.street || '',
+        area: updatedUser.address.area || '',
+        city: updatedUser.address.city || '',
+        state: updatedUser.address.state || '',
+        pincode: updatedUser.address.pincode || ''
+      } : {
+        street: '',
+        area: '',
+        city: '',
+        state: '',
+        pincode: ''
+      },
+      preferences: updatedUser.preferences ? {
+        propertyTypes: updatedUser.preferences.propertyTypes || [],
+        budgetMin: updatedUser.preferences.budgetMin || 0,
+        budgetMax: updatedUser.preferences.budgetMax || 0,
+        amenities: updatedUser.preferences.amenities || [],
+        genderPreference: updatedUser.preferences.genderPreference || 'any',
+        foodPreference: updatedUser.preferences.foodPreference || 'any'
+      } : {
+        propertyTypes: [],
+        budgetMin: 0,
+        budgetMax: 0,
+        amenities: [],
+        genderPreference: 'any',
+        foodPreference: 'any'
+      },
+      occupation: updatedUser.occupation || '',
+      bio: updatedUser.bio || '',
+      phone: updatedUser.phone || ''
+    };
+
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
-      data: updatedUser,
+      data: normalizedUser,
     });
   } catch (err: any) {
     console.error("Error updating profile:", err);
@@ -98,7 +211,6 @@ export const updateProfile = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 // Upload profile image
 export const uploadProfileImage = async (req: Request, res: Response) => {
@@ -133,7 +245,11 @@ export const uploadProfileImage = async (req: Request, res: Response) => {
     if (user.profileImage) {
       const publicId = user.profileImage.split('/').pop()?.split('.')[0];
       if (publicId) {
-        await cloudinary.uploader.destroy(`userProfile/${publicId}`);
+        try {
+          await cloudinary.uploader.destroy(`userProfile/${publicId}`);
+        } catch (deleteError) {
+          console.log("Could not delete old image:", deleteError);
+        }
       }
     }
 
@@ -166,19 +282,11 @@ export const uploadProfileImage = async (req: Request, res: Response) => {
     });
 
   } catch (err: any) {
-  console.error("Error uploading profile image:", err);
-  res.status(500).json({ 
-    success: false, 
-    message: "Error uploading image",
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-}
-
+    console.error("Error uploading profile image:", err);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error uploading image",
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
 };
-
-
-
-
-
-
-

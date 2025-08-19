@@ -6,7 +6,7 @@ import {
   CheckCircle, Upload
 } from 'lucide-react';
 import  axios from 'axios'
-
+import Swal from 'sweetalert2';
 const Profile = () => {
   const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
@@ -15,31 +15,39 @@ const Profile = () => {
   const [tempData, setTempData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageUploading, setImageUploading] = useState(false);
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        
-        const res = await axios.get(`http://localhost:5001/api/user/profile/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setProfileData(res.data);
-        setTempData(res.data);
-      } catch (err) {
-        console.error("Error fetching profile:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchProfile();
-  }, [id]);
 
-  const handleImageUpload = async (event) => {
+ useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const res = await axios.get(`http://localhost:5001/api/user/profile/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      console.log("Fetched profile data:", res.data);
+      
+      
+      const userData = res.data.data || res.data;
+      
+      setProfileData(userData);
+      setTempData(userData);
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProfile();
+}, [id]);
+
+const handleImageUpload = async (event) => {
   const file = event.target.files?.[0];
   if (!file) return;
 
-  
+  // Show preview immediately
   const previewUrl = URL.createObjectURL(file);
   setTempData((prev) => ({
     ...prev,
@@ -64,16 +72,42 @@ const Profile = () => {
       }
     );
 
-    // Replace preview with the real Cloudinary URL after success
+    // Update BOTH tempData and profileData with the real Cloudinary URL
+    const newImageUrl = res.data.data.profileImage;
     setTempData((prev) => ({
       ...prev,
-      profileImage: res.data.data.profileImage,
+      profileImage: newImageUrl,
+    }));
+    
+    // IMPORTANT: Also update profileData so it persists
+    setProfileData((prev) => ({
+      ...prev,
+      profileImage: newImageUrl,
     }));
 
-    alert("Image uploaded successfully!");
+    // Clean up the preview URL
+    URL.revokeObjectURL(previewUrl);
+    
+    Swal.fire({
+  icon: 'success',
+  title: 'Uploaded!',
+  text: 'Image uploaded successfully!',
+  showConfirmButton: false,
+  timer: 1500
+});
   } catch (err) {
     console.error("Error uploading image:", err);
-    alert("Error uploading image");
+    setTempData((prev) => ({
+      ...prev,
+      profileImage: profileData?.profileImage || null,
+    }));
+    URL.revokeObjectURL(previewUrl);
+   Swal.fire({
+  icon: 'error',
+  title: 'Upload Failed',
+  text: 'Error uploading image',
+  confirmButtonColor: '#d33'
+});
   } finally {
     setImageUploading(false);
   }
@@ -86,21 +120,33 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5001/api/user/profile/${id}`, tempData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      setProfileData(tempData);
-      setIsEditing(false);
-      alert('Profile updated successfully!');
-    } catch (err) {
-      console.error("Error updating profile:", err);
-      alert('Error updating profile');
-    }
-  };
-
+  try {
+    const token = localStorage.getItem('token');
+    const res = await axios.put(`http://localhost:5001/api/user/profile/${id}`, tempData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    
+    const updatedData = res.data.data || res.data;
+    
+    setProfileData(updatedData);
+    setIsEditing(false);
+   Swal.fire({
+  icon: 'success',
+  title: 'Success!',
+  text: 'Profile updated successfully!',
+  showConfirmButton: false,
+  timer: 1500
+});
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    Swal.fire({
+  icon: 'error',
+  title: 'Oops...',
+  text: 'Error updating profile',
+  confirmButtonColor: '#d33'
+});
+  }
+};
   const handleCancel = () => {
     setTempData({ ...profileData });
     setIsEditing(false);
