@@ -10,3 +10,5 @@ Backend and frontend for Listing is done just need to sync it ----> DONE 100%
 Now view Listing, filetring and other logic in building-->Kinda done small correction(review and stars after everything)
 
 now doing Profile---the data fron User model is not enough in profile so we need to think of something.
+
+Completed the profile setup

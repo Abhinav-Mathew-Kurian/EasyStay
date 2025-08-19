@@ -57,7 +57,14 @@ const ViewRooms = () => {
     fetchListings();
   }, []);
 
-  if (loading) return <div>Loading listings...</div>;
+  if (loading)
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="w-8 h-8 border-4 border-t-transparent border-purple-500 rounded-full animate-spin"></div>
+      <span className="ml-3 text-purple-400 font-medium">Loading...</span>
+    </div>
+  );
+
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
