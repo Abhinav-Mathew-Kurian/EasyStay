@@ -6,7 +6,8 @@ import {
   updateProfile,
   uploadProfileImage,
   addToSavedListing,
-  removeFromSavedListing
+  removeFromSavedListing,
+  getSavedListings
 } from '../controllers/user.controller';
 
 const router = express.Router();
@@ -45,5 +46,5 @@ router.delete("/save/:id", removeFromSavedListing);
 // Image upload routes
 router.post('/profile/:id/image', authMiddleware, upload.single('profileImage'), uploadProfileImage);
 
-
+router.get("/save/:id", getSavedListings);
 export default router;

@@ -51,7 +51,7 @@ const ViewDetails = () => {
         const res = await axios.get(
           `http://localhost:5001/api/listroom/room/${roomId}`
         );
-        console.log("Response data:",res.data)
+        console.log("Response data:", res.data)
         setListing(res.data);
       } catch (err) {
         console.error(err);
@@ -68,7 +68,14 @@ const ViewDetails = () => {
   }, [id, roomId]);
 
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#1E1E2F] to-[#00C49A] overflow-hidden">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+      </div>
+    );
+  }
+
   if (error) return <div className="text-red-500">{error}</div>;
   if (!listing) return null;
 
@@ -181,33 +188,33 @@ const ViewDetails = () => {
             {/* Location Map */}
             <div className="bg-[#2B2B40] rounded-lg p-5 space-y-3">
               <h3 className="text-lg font-semibold">Location Map</h3>
-             <MapContainer
-  center={[
-    listing.location.coordinates[1], // latitude
-    listing.location.coordinates[0], // longitude
-  ]}
-  zoom={15}
-  scrollWheelZoom={false}
-  className="h-[300px] rounded-lg z-0"
->
-  <TileLayer
-    attribution="&copy; OpenStreetMap"
-    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-  />
-  <Marker
-    position={[
-      listing.location.coordinates[1], // latitude
-      listing.location.coordinates[0], // longitude
-    ]}
-    icon={customIcon}
-  >
-    <Popup>
-      {listing.title}
-      <br />
-      {listing.location.area}, {listing.location.city}
-    </Popup>
-  </Marker>
-</MapContainer>
+              <MapContainer
+                center={[
+                  listing.location.coordinates[1], // latitude
+                  listing.location.coordinates[0], // longitude
+                ]}
+                zoom={15}
+                scrollWheelZoom={false}
+                className="h-[300px] rounded-lg z-0"
+              >
+                <TileLayer
+                  attribution="&copy; OpenStreetMap"
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker
+                  position={[
+                    listing.location.coordinates[1], // latitude
+                    listing.location.coordinates[0], // longitude
+                  ]}
+                  icon={customIcon}
+                >
+                  <Popup>
+                    {listing.title}
+                    <br />
+                    {listing.location.area}, {listing.location.city}
+                  </Popup>
+                </Marker>
+              </MapContainer>
 
             </div>
           </div>
@@ -255,29 +262,45 @@ const ViewDetails = () => {
             <div className="bg-[#2B2B40] rounded-lg p-5 space-y-5">
               <div>
                 <h3 className="text-lg font-semibold mb-2">Amenities</h3>
-                <div className="flex flex-col gap-2">
-                  {listing.amenities.map((amenity, i) => {
-                    const Icon = getAmenityIcon(amenity);
-                    return (
-                      <div key={i} className="flex items-center gap-2 p-2 bg-[#00C49A]/10 rounded">
-                        <Icon className="w-5 h-5 text-[#00C49A]" />
-                        <span className="text-sm">{amenity}</span>
-                      </div>
-                    );
-                  })}
-                </div>
+                {listing.amenities && listing.amenities.length > 0 ? (
+                  <div className="flex flex-col gap-2">
+                    {listing.amenities.map((amenity, i) => {
+                      const Icon = getAmenityIcon(amenity);
+                      return (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 p-2 bg-[#00C49A]/10 rounded"
+                        >
+                          <Icon className="w-5 h-5 text-[#00C49A]" />
+                          <span className="text-sm">{amenity}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm opacity-70">No amenities</p>
+                )}
               </div>
+
               <div>
                 <h3 className="text-lg font-semibold mb-2">Restrictions</h3>
-                <div className="flex flex-col gap-2">
-                  {listing.restrictions.map((restriction, i) => (
-                    <div key={i} className="flex items-center gap-2 p-2 bg-purple-600/20 rounded">
-                      <ShieldCheck className="w-5 h-5 text-purple-400" />
-                      <span className="text-sm">{restriction}</span>
-                    </div>
-                  ))}
-                </div>
+                {listing.restrictions && listing.restrictions.length > 0 ? (
+                  <div className="flex flex-col gap-2">
+                    {listing.restrictions.map((restriction, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 p-2 bg-purple-600/20 rounded"
+                      >
+                        <ShieldCheck className="w-5 h-5 text-purple-400" />
+                        <span className="text-sm">{restriction}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm opacity-70">No restrictions</p>
+                )}
               </div>
+
             </div>
           </div>
         </div>

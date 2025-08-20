@@ -342,3 +342,25 @@ export const removeFromSavedListing = async (req: Request, res: Response) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
+export const getSavedListings = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Invalid user ID format" });
+    }
+
+    const user = await User.findById(id).populate("savedListings"); 
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({ success: true, savedListings: user.savedListings });
+  } catch (error) {
+    console.error("Error fetching saved listings:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
