@@ -6,7 +6,13 @@ import {
   Building, FileText, Settings, Save, Loader
 } from 'lucide-react';
 import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+import Swal from "sweetalert2";
+
+
 const ListRooms = () => {
+  const navigate = useNavigate()
+  const { id } = useParams;
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -48,6 +54,7 @@ const ListRooms = () => {
   const [uploading, setUploading] = useState(false);
   const [newAmenity, setNewAmenity] = useState('');
   const [newRestriction, setNewRestriction] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const propertyTypes = ['PG', '1BHK', '2BHK', '3BHK', 'Single Room', 'Shared Room'];
   const genderOptions = ['Any', 'Male', 'Female'];
@@ -119,91 +126,105 @@ const ListRooms = () => {
     }));
   };
 
-const handleSubmit = async () => {
-  if (formData.images.length < 3) {
-    alert('Please upload at least 3 images');
-    return;
-  }
-
-  const token = localStorage.getItem('token'); 
-
-  if (!token) {
-    alert('You must be logged in to submit.');
-    return;
-  }
-
-  const submitData = new FormData();
-
-  submitData.append('title', formData.title);
-  submitData.append('slug', formData.slug);
-  submitData.append('type', formData.type);
-  submitData.append('description', formData.description);
-const geoLocation = {
-  city: formData.location.city,
-  area: formData.location.area,
-  type: 'Point',
-  coordinates: [
-    Number(formData.location.longitude), // longitude first
-    Number(formData.location.latitude),  // latitude second
-  ],
-};
-
-submitData.append('location', JSON.stringify(geoLocation));
-  submitData.append('state', formData.state);
-  submitData.append('pincode', formData.pincode);
-
-  // Clean occupancy.allowed before sending, set ["0"] if empty
-  let cleanedAllowed = formData.occupancy.allowed.filter(item => item.trim() !== '');
-  if (cleanedAllowed.length === 0) {
-    cleanedAllowed = ["0"];
-  }
-  submitData.append('occupancy', JSON.stringify({
-    ...formData.occupancy,
-    allowed: cleanedAllowed
-  }));
-
-  submitData.append('shared_with', formData.shared_with.toString());
-  submitData.append('current_occupants', formData.current_occupants.toString());
-  submitData.append('is_occupied', formData.is_occupied.toString());
-  submitData.append('amenities', JSON.stringify(formData.amenities));
-  submitData.append('restrictions', JSON.stringify(formData.restrictions));
-  submitData.append('monthly_rent', formData.monthly_rent.toString());
-
-  submitData.append(
-    'availability',
-    JSON.stringify({
-      ...formData.availability,
-      available_from: formData.availability.available_from
-        ? new Date(formData.availability.available_from)
-        : new Date(),
-    })
-  );
-
-  submitData.append('owner', JSON.stringify(formData.owner));
-
-  formData.images.forEach((file) => {
-    submitData.append('images', file);
-  });
-
-  try {
-    const response = await axios.post('http://localhost:5001/api/listroom', submitData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (response.status === 201) {
-      alert('Property listed successfully!');
-      // Reset form or redirect logic here
+  const handleSubmit = async () => {
+    if (formData.images.length < 3) {
+      alert('Please upload at least 3 images');
+      return;
     }
-  } catch (error) {
-    console.error('Submit error:', error);
-    const message =
-      error.response?.data?.message || error.message || 'Failed to list property';
-    alert(`Error: ${message}`);
-  }
-};
+
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      alert('You must be logged in to submit.');
+      return;
+    }
+
+    const submitData = new FormData();
+
+    submitData.append('title', formData.title);
+    submitData.append('slug', formData.slug);
+    submitData.append('type', formData.type);
+    submitData.append('description', formData.description);
+    const geoLocation = {
+      city: formData.location.city,
+      area: formData.location.area,
+      type: 'Point',
+      coordinates: [
+        Number(formData.location.longitude), // longitude first
+        Number(formData.location.latitude),  // latitude second
+      ],
+    };
+
+    submitData.append('location', JSON.stringify(geoLocation));
+    submitData.append('state', formData.state);
+    submitData.append('pincode', formData.pincode);
+
+    // Clean occupancy.allowed before sending, set ["0"] if empty
+    let cleanedAllowed = formData.occupancy.allowed.filter(item => item.trim() !== '');
+    if (cleanedAllowed.length === 0) {
+      cleanedAllowed = ["0"];
+    }
+    submitData.append('occupancy', JSON.stringify({
+      ...formData.occupancy,
+      allowed: cleanedAllowed
+    }));
+
+    submitData.append('shared_with', formData.shared_with.toString());
+    submitData.append('current_occupants', formData.current_occupants.toString());
+    submitData.append('is_occupied', formData.is_occupied.toString());
+    submitData.append('amenities', JSON.stringify(formData.amenities));
+    submitData.append('restrictions', JSON.stringify(formData.restrictions));
+    submitData.append('monthly_rent', formData.monthly_rent.toString());
+
+    submitData.append(
+      'availability',
+      JSON.stringify({
+        ...formData.availability,
+        available_from: formData.availability.available_from
+          ? new Date(formData.availability.available_from)
+          : new Date(),
+      })
+    );
+
+    submitData.append('owner', JSON.stringify(formData.owner));
+
+    formData.images.forEach((file) => {
+      submitData.append('images', file);
+    });
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post('http://localhost:5001/api/listroom', submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 201) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Property listed successfully!",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK"
+        });
+        navigate(`/${id}/dashboard`)
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+      const message =
+        error.response?.data?.message || error.message || 'Failed to list property';
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Error: ${message}`,
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Try Again"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
 
   const getAmenityIcon = (amenity) => {
@@ -674,11 +695,20 @@ submitData.append('location', JSON.stringify(geoLocation));
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={formData.images.length < 3 || uploading}
+              disabled={formData.images.length < 3 || uploading || isSubmitting}
               className="w-full bg-purple-600 hover:bg-purple-800 disabled:bg-gray-600 text-white py-4 rounded-lg font-semibold flex items-center justify-center gap-2 text-lg"
             >
-              <Save className="w-5 h-5" />
-              List My Property
+              {isSubmitting ? (
+                <>
+                  <Loader className="w-5 h-5 animate-spin" />
+                  Listing Property...
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  List My Property
+                </>
+              )}
             </button>
           </div>
         </div>
