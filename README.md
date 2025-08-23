@@ -19,3 +19,5 @@ started with save functionality
 fixed the location bug-when viewing details
 
 finished the saved Component, working .
+
+next overall, backend , web socket, message , then Ai
